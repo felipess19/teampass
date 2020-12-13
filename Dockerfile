@@ -1,38 +1,33 @@
-FROM richarvey/nginx-php-fpm:1.5.7
+FROM php:7.4-apache
+LABEL author="felipess19@protonmail.com"
 
-# The location of the web files
-ARG VOL=/var/www/html
-ENV VOL ${VOL}
-VOLUME ${VOL}
 
-# Configure nginx-php-fpm image to use this dir.
-ENV WEBROOT ${VOL}
+RUN apt-get update && \
+    apt-get install -y \
+        zlib1g-dev libpng-dev
 
-RUN apk add --no-cache --repository http://dl-3.alpinelinux.org/alpine/edge/testing gnu-libiconv
-ENV LD_PRELOAD /usr/lib/preloadable_libiconv.so php
+RUN docker-php-ext-install gd bcmath mysqli && docker-php-ext-enable gd bcmath mysqli
+
+COPY 000-teampass.conf /etc/apache2/sites-available/000-teampass.conf
+COPY start-apache.sh /usr/local/bin
+RUN chmod +x /usr/local/bin/start-apache.sh
+
+# Use the default production configuration
+RUN mv "$PHP_INI_DIR/php.ini-production" "$PHP_INI_DIR/php.ini"
+COPY php_teampass.ini $PHP_INI_DIR/conf.d/
 
 RUN echo && \
-  # Install and configure missing PHP requirements
-  /usr/local/bin/docker-php-ext-configure bcmath && \
-  /usr/local/bin/docker-php-ext-install bcmath && \
-  apk add --no-cache openldap-dev && \
-  /usr/local/bin/docker-php-ext-configure ldap && \
-  /usr/local/bin/docker-php-ext-install ldap && \
-  apk del openldap-dev && \
-  echo "max_execution_time = 120" >> /usr/local/etc/php/conf.d/docker-vars.ini && \
-echo
+    mkdir -p /usr/local/teampass/src/ && \
+    chown -R www-data: /usr/local/teampass/src/ && \
+    echo
 
-# Fix API URL, BUG: API not working in container. #2100
-# Search last } and insert configuration rows before
-RUN sed -i "/^}/i \
-  location /api/ {\
-          try_files $uri $uri/ /api/index.php?$args;\
-  }" /etc/nginx/sites-enabled/default.conf
+COPY . /usr/local/teampass/src/
 
-COPY teampass-docker-start.sh /teampass-docker-start.sh
+RUN echo && \
+    mkdir -p /usr/local/teampass/conf/ && \
+    chown -R www-data: /var/www && \
+    chown -R www-data: /usr/local/teampass/conf/ && \
+    echo
 
-# Configure nginx-php-fpm image to pull our code.
-ENV REPO_URL https://gitlab.com/NilsLaumaille/teampass-v3.git
 
-ENTRYPOINT ["/bin/sh"]
-CMD ["/teampass-docker-start.sh"]
+CMD ["/usr/local/bin/start-apache.sh"]

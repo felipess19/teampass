@@ -1,2 +1,6 @@
-*
-!teampass-docker-start.sh
+Dockerfile
+docker-compose.yml
+volumes/
+teampass-docker-start.sh
+000-teampass.conf
+start-apache.sh

@@ -6,26 +6,27 @@ services:
     networks:
       - frontend
     ports:
-      - "443:443"
+      - "443"
       - "5000"
     volumes:
       - ./volumes/ssl:/etc/nginx/certs
       - /var/run/docker.sock:/tmp/docker.sock:ro
 
   teampass:
-    image: teampass/teampass
+    image: fsarmanho/teampass:3
     restart: always
     environment:
-      VIRTUAL_HOST: teampass.example.com
+      VIRTUAL_HOST: teampasscase.anac.gov.br
     networks:
       - frontend
       - backend
     volumes:
-      - ./volumes/teampass:/var/www/html
+      - ./volumes/teampass/app:/var/www/html
+      - ./volumes/teampass/conf:/usr/local/teampass/conf
 
   db:
     restart: always
-    image: mysql/mysql-server:5.7
+    image: mysql/mysql-server:8.0
     environment:
       MYSQL_ROOT_PASSWORD: mypass
       MYSQL_DATABASE: teampass

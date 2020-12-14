@@ -4,9 +4,9 @@ LABEL author="felipess19@protonmail.com"
 
 RUN apt-get update && \
     apt-get install -y \
-        zlib1g-dev libpng-dev
+        zlib1g-dev libpng-dev libldap2-dev
 
-RUN docker-php-ext-install gd bcmath mysqli && docker-php-ext-enable gd bcmath mysqli
+RUN docker-php-ext-install gd bcmath mysqli ldap
 
 COPY 000-teampass.conf /etc/apache2/sites-available/000-teampass.conf
 COPY start-apache.sh /usr/local/bin/start-apache.sh

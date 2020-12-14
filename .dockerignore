@@ -1,6 +1,12 @@
+.git
+.gitignore
+.github
+.eslintrc
+.eslintignore
+.dockerignore
 Dockerfile
 docker-compose.yml
 volumes/
 teampass-docker-start.sh
-000-teampass.conf
-start-apache.sh
+#apache_teampass.conf
+#start_apache.sh

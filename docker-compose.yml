@@ -20,6 +20,8 @@ services:
     networks:
       - frontend
       - backend
+    ports:
+      - "80"
     volumes:
       - ./volumes/teampass/app:/var/www/html
       - ./volumes/teampass/conf:/usr/local/teampass/conf
@@ -27,6 +29,7 @@ services:
   db:
     restart: always
     image: mysql/mysql-server:8.0
+    command: --socket=/var/run/mysqld/mysql.sock 
     environment:
       MYSQL_ROOT_PASSWORD: mypass
       MYSQL_DATABASE: teampass
@@ -34,6 +37,8 @@ services:
       MYSQL_USER: teampass
     volumes:
       - ./volumes/db:/var/lib/mysql
+    expose:
+      - "3306"
     networks:
       - backend
 

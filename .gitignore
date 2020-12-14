@@ -10,8 +10,7 @@ bower_components
 ad.js
 TODO
 test.html
-/includes/avatars
-/includes/config/tp.config.php
-/includes/config/settings.php
-*/volumes/
-volumes/teampass
+includes/avatars
+includes/config/tp.config.php
+includes/config/settings.php
+volumes/
